@@ -1,0 +1,47 @@
+#!/bin/sh
+
+mkdir temp
+cd temp
+
+echo "********************"
+echo "* Downloading app  *"
+echo "********************"
+#use LOk if you want to save file
+if [[ $# -ge 1 ]];
+then
+  curl -Lk https://github.com/bbodenmiller/onebusaway-iphone-test-releases/archive/$1.tar.gz | tar -xz
+else
+  curl -Lk https://github.com/bbodenmiller/onebusaway-iphone-test-releases/archive/dev.tar.gz | tar -xz
+fi
+
+SOURCE=`find . -name "onebusaway-iphone-test-releases*"`
+
+if [[ ! -d $SOURCE ]]; then
+  echo "An error occured, no changes have been made"
+  exit -1
+fi
+
+if [[ -d "/Applications/OneBusAway.app/" ]]; then
+  CUR_DIR=`pwd`
+
+  echo "************************"
+  echo "* Removing current app *"
+  echo "************************"
+  cd /Applications
+  rm -R OneBusAway.app
+
+  cd $CUR_DIR
+fi
+
+echo "********************"
+echo "*  Installing app  *"
+echo "********************"
+cp -R ./$SOURCE/OneBusAway.app /Applications/OneBusAway.app
+
+cd ..
+
+echo "********************"
+echo "*      Cleanup     *"
+echo "********************"
+rm -R temp
+killall SpringBoard
