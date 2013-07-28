@@ -1,10 +1,8 @@
-onebusaway-iphone-test-releases
-===============================
+# onebusaway-iphone test releases #
 
-Stores fake signed compiled code from onebusaway-iphone CI for users with jailbroken devices to test.
+Fake signed compiled code from onebusaway-iphone CI for users with jailbroken devices to test.
 
-1. Download zip file from the right.
-2. From Cydia install OpenSSH
-3. Use PuTTY, WinSCP, something to SSH in to your device. Username is `root` password `alpine`.
-4. Copy OneBusAway.app folder to /Applications
-5. Set execute permissions on OneBusAway file in OneBusAway.app folder
+## Install ##
+1. Install `git` and `MobileTerminal` from Cydia
+2. In `MobileTerminal` run `curl -o https://github.com/bbodenmiller/onebusaway-iphone-test-releases/raw/oba`
+3. Then run `./oba <branch>` anytime you want to get the latest code. Leaving off the branch will default to the `dev` branch.
