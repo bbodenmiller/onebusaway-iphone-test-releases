@@ -1,4 +1,4 @@
 onebusaway-iphone-test-releases
 ===============================
 
-Stores unsigned compiled code from onebusaway-iphone CI
+Stores fake signed compiled code from onebusaway-iphone CI for users with jailbroken devices to test. Download zip file from the right.
