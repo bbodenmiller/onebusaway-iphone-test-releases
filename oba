@@ -21,13 +21,13 @@ if [[ ! -d $SOURCE ]]; then
   exit -1
 fi
 
-if [[ -d "/Applications/OneBusAway.app/" ]]; then
+if [[ -d "~/Applications/OneBusAway.app/" ]]; then
   CUR_DIR=`pwd`
 
   echo "************************"
   echo "* Removing current app *"
   echo "************************"
-  cd /Applications
+  cd ~/Applications
   rm -Rf OneBusAway.app
 
   cd $CUR_DIR
@@ -36,7 +36,7 @@ fi
 echo "********************"
 echo "*  Installing app  *"
 echo "********************"
-cp -R ./$SOURCE/OneBusAway.app /Applications/OneBusAway.app
+cp -R ./$SOURCE/OneBusAway.app ~/Applications/OneBusAway.app
 
 cd ..
 
@@ -44,4 +44,4 @@ echo "********************"
 echo "*      Cleanup     *"
 echo "********************"
 rm -R temp
-reboot
+killall SpringBoard
