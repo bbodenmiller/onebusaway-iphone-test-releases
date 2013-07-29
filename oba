@@ -28,7 +28,7 @@ if [[ -d "/Applications/OneBusAway.app/" ]]; then
   echo "* Removing current app *"
   echo "************************"
   cd /Applications
-  rm -R OneBusAway.app
+  rm -Rf OneBusAway.app
 
   cd $CUR_DIR
 fi
