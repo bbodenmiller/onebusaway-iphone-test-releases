@@ -44,4 +44,4 @@ echo "********************"
 echo "*      Cleanup     *"
 echo "********************"
 rm -R temp
-killall SpringBoard
+reboot
