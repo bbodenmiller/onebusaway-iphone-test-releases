@@ -1,5 +1,6 @@
 #!/bin/sh
 
+echo "Enter root password"
 login root
 
 mkdir temp
