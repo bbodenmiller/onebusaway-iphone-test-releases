@@ -16,7 +16,7 @@ function dorestart {
   read -p "Restart required. Restart now? (y/n) " -n 1
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
-       echo ""
+       echo "\n"
        reboot
   fi
 }
