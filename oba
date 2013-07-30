@@ -14,7 +14,7 @@ function rmapp {
 
 function dorestart {
   read -p "Restart required. Restart now? (y/n) " -n 1
-  echo "\n"
+  echo ""
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
        reboot
