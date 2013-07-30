@@ -9,9 +9,8 @@ fi
 mkdir temp
 cd temp
 
-echo "********************"
-echo "* Downloading app  *"
-echo "********************"
+###
+echo "Downloading app..."
 #use LOk if you want to save file
 if [[ $# -ge 1 ]];
 then
@@ -27,30 +26,28 @@ if [[ ! -d $SOURCE ]]; then
   exit -1
 fi
 
+###
 if [[ -d "/Applications/OneBusAway.app/" ]]; then
   CUR_DIR=`pwd`
 
-  echo "************************"
-  echo "* Removing current app *"
-  echo "************************"
+  echo "Removing current app..."
   cd /Applications
   rm -Rf OneBusAway.app
 
   cd $CUR_DIR
 fi
 
-echo "********************"
-echo "*  Installing app  *"
-echo "********************"
+###
+echo "Installing app..."
 cp -R ./$SOURCE/OneBusAway.app /Applications/OneBusAway.app
 
 cd ..
 
-echo "********************"
-echo "*      Cleanup     *"
-echo "********************"
+###
+echo "Cleanup..."
 rm -R temp
 
+###
 read -p "Restart required before app will appear. Restart now? (y/n) " -n 1
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
