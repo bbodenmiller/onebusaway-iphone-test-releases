@@ -26,13 +26,14 @@ if [[ $EUID -ne 0 ]]; then
    exit -1
 fi
 
-$1 = "country"
-
-if [[ $1 = "rm" ]];
+if [[ $# -ge 1 ]];
 then
-  rmapp
-  dorestart
-  exit 0
+  if [[ $1 = "rm" ]];
+  then
+    rmapp
+    dorestart
+    exit 0
+  fi
 fi
 
 mkdir temp
