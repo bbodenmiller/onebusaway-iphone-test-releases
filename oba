@@ -1,8 +1,5 @@
 #!/bin/sh
 
-echo "Enter root password"
-login root
-
 mkdir temp
 cd temp
 
@@ -47,4 +44,9 @@ echo "********************"
 echo "*      Cleanup     *"
 echo "********************"
 rm -R temp
-reboot
+
+read -p "Restart required before app will appear. Restart now? (y/n) " -n 1
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    reboot
+fi
