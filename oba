@@ -1,11 +1,47 @@
 #!/bin/sh
 
+function rmapp {
+  if [[ -d "/Applications/OneBusAway.app/" ]]; then
+    CUR_DIR=`pwd`
+
+    echo "Removing current app..."
+    cd /Applications
+    rm -Rf OneBusAway.app
+
+    cd $CUR_DIR
+  fi
+}
+
+function dorestart {
+  read -p "Restart required. Restart now? (y/n) " -n 1
+  echo ""
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+       reboot
+  fi
+}
+
+# make sure only root can run our script
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit -1
+fi
+
+if [[ $# -ge 1 ]];
+then
+  if [[ $1 = "rm" ]];
+  then
+    rmapp
+    dorestart
+    exit 0
+  fi
+fi
+
 mkdir temp
 cd temp
 
-echo "********************"
-echo "* Downloading app  *"
-echo "********************"
+###
+echo "Downloading app..."
 #use LOk if you want to save file
 if [[ $# -ge 1 ]];
 then
@@ -21,27 +57,18 @@ if [[ ! -d $SOURCE ]]; then
   exit -1
 fi
 
-if [[ -d "/Applications/OneBusAway.app/" ]]; then
-  CUR_DIR=`pwd`
+###
+rmapp
 
-  echo "************************"
-  echo "* Removing current app *"
-  echo "************************"
-  cd /Applications
-  rm -R OneBusAway.app
-
-  cd $CUR_DIR
-fi
-
-echo "********************"
-echo "*  Installing app  *"
-echo "********************"
+###
+echo "Installing app..."
 cp -R ./$SOURCE/OneBusAway.app /Applications/OneBusAway.app
 
 cd ..
 
-echo "********************"
-echo "*      Cleanup     *"
-echo "********************"
+###
+echo "Cleanup..."
 rm -R temp
-killall SpringBoard
+
+###
+dorestart
