@@ -1,5 +1,25 @@
 #!/bin/sh
 
+function rmapp {
+  if [[ -d "/Applications/OneBusAway.app/" ]]; then
+    CUR_DIR=`pwd`
+
+    echo "Removing current app..."
+    cd /Applications
+    rm -Rf OneBusAway.app
+
+    cd $CUR_DIR
+  fi
+}
+
+function dorestart {
+  read -p "Restart required. Restart now? (y/n) " -n 1
+  if [[ ! $REPLY =~ ^[Yy]$ ]]
+  then
+       reboot
+  fi
+}
+
 # make sure only root can run our script
 if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root" 1>&2
@@ -50,23 +70,3 @@ rm -R temp
 
 ###
 dorestart
-
-function rmapp {
-  if [[ -d "/Applications/OneBusAway.app/" ]]; then
-    CUR_DIR=`pwd`
-
-    echo "Removing current app..."
-    cd /Applications
-    rm -Rf OneBusAway.app
-
-    cd $CUR_DIR
-  fi
-}
-
-function dorestart {
-  read -p "Restart required. Restart now? (y/n) " -n 1
-  if [[ ! $REPLY =~ ^[Yy]$ ]]
-  then
-       reboot
-  fi
-}
