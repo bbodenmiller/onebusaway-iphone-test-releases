@@ -6,6 +6,15 @@ if [[ $EUID -ne 0 ]]; then
    exit -1
 fi
 
+$1 = "country"
+
+if [[ $1 = "rm" ]];
+then
+  rmapp
+  dorestart
+  exit 0
+fi
+
 mkdir temp
 cd temp
 
@@ -27,15 +36,7 @@ if [[ ! -d $SOURCE ]]; then
 fi
 
 ###
-if [[ -d "/Applications/OneBusAway.app/" ]]; then
-  CUR_DIR=`pwd`
-
-  echo "Removing current app..."
-  cd /Applications
-  rm -Rf OneBusAway.app
-
-  cd $CUR_DIR
-fi
+rmapp
 
 ###
 echo "Installing app..."
@@ -48,8 +49,24 @@ echo "Cleanup..."
 rm -R temp
 
 ###
-read -p "Restart required before app will appear. Restart now? (y/n) " -n 1
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-    reboot
-fi
+dorestart
+
+function rmapp {
+  if [[ -d "/Applications/OneBusAway.app/" ]]; then
+    CUR_DIR=`pwd`
+
+    echo "Removing current app..."
+    cd /Applications
+    rm -Rf OneBusAway.app
+
+    cd $CUR_DIR
+  fi
+}
+
+function dorestart {
+  read -p "Restart required. Restart now? (y/n) " -n 1
+  if [[ ! $REPLY =~ ^[Yy]$ ]]
+  then
+       reboot
+  fi
+}
