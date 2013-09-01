@@ -62,7 +62,7 @@ rmapp
 
 ###
 echo "Installing app..."
-cp -R ./$SOURCE/OneBusAway.app /Applications/OneBusAway.app
+#cp -R ./$SOURCE/OneBusAway.app /Applications/OneBusAway.app
 cp ./$SOURCE/OneBusAway.ipa /var/mobile/Downloads/
 
 cd ..
