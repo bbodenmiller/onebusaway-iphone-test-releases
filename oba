@@ -1,75 +1,46 @@
 #!/bin/sh
-
-function rmapp {
-  if [[ -d "/Applications/OneBusAway.app/" ]]; then
-    CUR_DIR=`pwd`
-
-    echo "Removing current app..."
-    cd /Applications
-    rm -Rf OneBusAway.app
-
-    cd $CUR_DIR
+function checklastcommanderrorexit {
+  RC=$?
+  #echo "exit code: $RC"
+  if [[ $RC -ne "0" ]]; then
+    echo "An error occured: $RC, no changes have been made"
+    exit -1
   fi
 }
 
-function dorestart {
-  read -p "Restart required. Restart now? (y/n) " -n 1
-  echo ""
-  if [[ $REPLY =~ ^[Yy]$ ]]
-  then
-       reboot
-  fi
-}
-
-# make sure only root can run our script
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root" 1>&2
-   exit -1
-fi
-
-if [[ $# -ge 1 ]];
+#check if branch specified, else set to develop
+if [[ $# -lt 1 ]];
 then
-  if [[ $1 = "rm" ]];
-  then
-    rmapp
-    dorestart
-    exit 0
-  fi
-fi
-
-mkdir temp
-cd temp
-
-###
-echo "Downloading app..."
-#use LOk if you want to save file
-if [[ $# -ge 1 ]];
-then
-  curl -Lk https://github.com/bbodenmiller/onebusaway-iphone-test-releases/archive/$1.tar.gz | tar -xz
+  BRANCH="develop"
 else
-  curl -Lk https://github.com/bbodenmiller/onebusaway-iphone-test-releases/archive/dev.tar.gz | tar -xz
+  BRANCH=$1
 fi
 
-SOURCE=`find . -name "onebusaway-iphone-test-releases*"`
-
-if [[ ! -d $SOURCE ]]; then
-  echo "An error occured, no changes have been made"
+echo "Verifying branch/installation file exists..." 1>&2
+FILE_REPONSE_CODE=0
+FILE_REPONSE_CODE="`curl -sLkI -w "%{http_code}" https://github.com/bbodenmiller/onebusaway-iphone-test-releases/raw/$BRANCH/OneBusAway.ipa -o /dev/null`"
+if [ $FILE_REPONSE_CODE -ne 200 ]; then
+  echo "Installation file/branch ($BRANCH, $FILE_REPONSE_CODE) does not exist, no changes have been made"
   exit -1
 fi
 
-###
-rmapp
+mkdir -p Downloads
+cd Downloads
 
-###
+if [[ -f OneBusAway.ipa ]]; then
+  echo "Cleaning old installation files..." 1>&2
+  rm -f OneBusAway.ipa
+fi
+
+echo "Downloading app..."
+curl -LOk https://github.com/bbodenmiller/onebusaway-iphone-test-releases/raw/$BRANCH/OneBusAway.ipa
+
+echo "Validating downloaded app..." 1>&2
+checklastcommanderrorexit
+if [[ ! -f OneBusAway.ipa ]]; then
+  echo "File did not download properly, no changes have been made"
+  exit -1
+fi
+
 echo "Installing app..."
-#cp -R ./$SOURCE/OneBusAway.app /Applications/OneBusAway.app
-cp ./$SOURCE/OneBusAway.ipa /var/mobile/Downloads/
-
-cd ..
-
-###
-echo "Cleanup..."
-rm -R temp
-
-###
-dorestart
+installipa -f OneBusAway.ipa
