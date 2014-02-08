@@ -11,7 +11,7 @@ function checklastcommanderrorexit {
 #check if branch specified, else set to develop
 if [[ $# -lt 1 ]];
 then
-  BRANCH="develop"
+  BRANCH="OneBusAway/develop"
 else
   BRANCH=$1
 fi
