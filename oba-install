@@ -25,7 +25,7 @@ function dorespring {
   echo ""
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
-      uicache
+      #uicache
       killall backboardd
   fi
 }
