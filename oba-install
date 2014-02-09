@@ -8,6 +8,48 @@ function checklastcommanderrorexit {
   fi
 }
 
+function rmapp {
+  if [[ -d "/Applications/OneBusAway.app/" ]]; then
+    CUR_DIR=`pwd`
+
+    echo "Removing current app..."
+    cd /Applications
+    rm -Rf OneBusAway.app
+
+    cd $CUR_DIR
+  fi
+}
+
+function dorespring {
+  read -p "Respring required. Respring now? (y/n) " -n 1
+  echo ""
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+      uicache
+      killall backboardd
+  fi
+}
+
+# make sure only root can run our script
+if [[ $EUID -ne 0 ]]; then
+  echo "This script must be run as root"
+  exit -1
+fi
+
+if [[ $# -ge 1 ]];
+then
+  if [[ $1 = "rm" ]];
+  then
+    rmapp
+    dorespring
+    exit 0
+  fi
+fi
+
+mkdir -p temp
+cd temp
+
+###
 #check if branch specified, else set to develop
 if [[ $# -lt 1 ]];
 then
@@ -16,31 +58,41 @@ else
   BRANCH=$1
 fi
 
-echo "Verifying branch/installation file exists..." 1>&2
-FILE_REPONSE_CODE=0
-FILE_REPONSE_CODE="`curl -sLkI -w "%{http_code}" https://github.com/bbodenmiller/onebusaway-iphone-test-releases/raw/$BRANCH/OneBusAway.ipa -o /dev/null`"
-if [ $FILE_REPONSE_CODE -ne 200 ]; then
-  echo "Installation file/branch ($BRANCH, $FILE_REPONSE_CODE) does not exist, no changes have been made"
+echo "Verifying branch/installation file exists..."
+FILE_RESPONSE_CODE=0
+FILE_RESPONSE_CODE="`curl -sLkI -w "%{http_code}" https://github.com/bbodenmiller/onebusaway-iphone-test-releases/archive/$BRANCH.tar.gz -o /dev/null`"
+if [ $FILE_RESPONSE_CODE -ne 200 ]; then
+  echo "Installation file/branch ($BRANCH, $FILE_RESPONSE_CODE) does not exist, no changes have been made"
   exit -1
-fi
-
-mkdir -p Downloads
-cd Downloads
-
-if [[ -f OneBusAway.ipa ]]; then
-  echo "Cleaning old installation files..." 1>&2
-  rm -f OneBusAway.ipa
 fi
 
 echo "Downloading app..."
-curl -LOk https://github.com/bbodenmiller/onebusaway-iphone-test-releases/raw/$BRANCH/OneBusAway.ipa
+#use LOk if you want to save file
+curl -Lk https://github.com/bbodenmiller/onebusaway-iphone-test-releases/archive/$BRANCH.tar.gz | tar -xz
 
-echo "Validating downloaded app..." 1>&2
+SOURCE=`find . -name "onebusaway-iphone-test-releases*"`
+COUNT=`find . -name "*" | wc -l`
+
+echo "Validating downloaded app..."
 checklastcommanderrorexit
-if [[ ! -f OneBusAway.ipa ]]; then
-  echo "File did not download properly, no changes have been made"
+if [[ $COUNT -lt 2 ]]; then
+  echo "App did not download properly, no changes have been made"
   exit -1
 fi
 
+###
+rmapp
+
+###
 echo "Installing app..."
-installipa -f OneBusAway.ipa
+cp -R ./$SOURCE/OneBusAway.app /Applications/OneBusAway.app
+chmod 755 /Applications/OneBusAway.app/OneBusAway
+
+cd ..
+
+###
+echo "Cleanup..."
+rm -R temp
+
+###
+dorespring
